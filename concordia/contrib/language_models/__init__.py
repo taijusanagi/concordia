@@ -35,6 +35,7 @@ _REGISTRY = types.MappingProxyType({
     'mistral': 'mistral.mistral_model.MistralLanguageModel',
     'ollama': 'ollama.ollama_model.OllamaLanguageModel',
     'openai': 'openai.gpt_model.GptLanguageModel',
+    'openai_codex': 'openai.codex_model.CodexLanguageModel',
     'pytorch_gemma': (
         'huggingface.pytorch_gemma_model.PyTorchGemmaLanguageModel'
     ),

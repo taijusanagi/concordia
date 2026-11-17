@@ -6,6 +6,10 @@ evolving, we rely on the community to help us keep these wrappers up-to-date and
 to expand our support for a wider variety of models. Your contributions are
 crucial for the continued success and utility of this project.
 
+To run with a ChatGPT subscription through Codex, see the
+[subscription provider setup](openai/README.md). Select `openai_codex` for
+ChatGPT login; `openai` continues to use OpenAI Platform API keys.
+
 --------------------------------------------------------------------------------
 
 ## Why We Need Your Help

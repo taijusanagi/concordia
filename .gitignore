@@ -1,4 +1,4 @@
-# MacOS metadata. 
+# MacOS metadata.
 .DS_Store
 
 # Pycharm metadata.
@@ -23,3 +23,7 @@ __pycache__/
 
 # Test cache
 .pytest_cache
+
+# Custome
+.tmp
+local_runs
