@@ -44,8 +44,15 @@ The server binds only to `127.0.0.1`. Stop it with Ctrl+C.
   Without a matching file, initial background memory entries are shown.
 * **Memories** searches the final saved memory bank. It is explicitly an
   end-of-run view, not an event-time memory snapshot.
-* **GM context** shows the location context saved with the selected resolution.
-  **Tick snapshot** shows the separate `location_history.json` record.
+* **The map uses only `location_history.json`.** All residents stay at the saved
+  positions while you inspect different agents' logs in the same tick. Positions
+  update together when the selected tick changes. Missing snapshots are shown as
+  unavailable; thoughts, proposed actions, and raw GM contexts never substitute
+  for recorded positions.
+* **Thinking and actions are a separate log view.** The inspector shows the
+  recorded action-context time, while the map is labeled with its snapshot tick.
+  The Resolve tab retains the raw GM context for inspection, including any
+  discrepancies with the saved locations.
 * Filter the event list by resident, or toggle map labels. Keyboard shortcuts:
   left/right arrows to step; Space to play/pause outside controls.
 
@@ -80,4 +87,5 @@ python -m unittest visualizations.concordia_island.server_test
 
 The UI has also been checked in a Chromium browser against the local
 four-resident run, including playback, stage selection, persona inspection,
-memory search, event filters, map-source switching, and a mobile viewport.
+memory search, event filters, stable positions within a tick, snapshot changes
+between ticks, and a mobile viewport.

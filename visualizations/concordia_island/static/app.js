@@ -4,7 +4,7 @@ const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'
 const pretty = (value) => String(value ?? '').replace(/_unit_(\d+)/g, ' · $1').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 const flat = (text) => String(text ?? '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
 const short = (text, length = 120) => { const s = flat(text); return s.length > length ? s.slice(0, length - 1) + '…' : s; };
-const state = {run:null,index:0,selected:null,tab:'mind',stage:'think',source:'context',labels:true,timer:null,filter:'',positions:{},anchors:{}};
+const state = {run:null,index:0,selected:null,tab:'mind',stage:'think',labels:true,timer:null,filter:'',positions:{},anchors:{}};
 const SVG = 'http://www.w3.org/2000/svg';
 const icons = {observe:'01',think:'02',act:'03',resolve:'04'};
 const current = () => state.run?.events[state.index];
@@ -79,7 +79,9 @@ function eventForSelected() {
 }
 
 function locationsFor(event = current()) {
-  return event?.[state.source === 'snapshot' ? 'snapshot_locations' : 'context_locations'] || {};
+  // Map positions come only from location_history.json. Agent log selection
+  // within one tick must not change the displayed world state.
+  return event?.snapshot_locations || {};
 }
 
 function renderResidents() {
@@ -91,7 +93,14 @@ function renderEvents() {
   const events = state.run.events.filter(event => !state.filter || event.agent === state.filter);
   $('#eventList').innerHTML = events.map(event => `<button class="event-row ${event.id === state.index ? 'active' : ''}" data-event="${event.id}" aria-current="${event.id === state.index ? 'step' : 'false'}"><span class="event-number">${String(event.id + 1).padStart(2,'0')}</span><span class="event-body"><span class="event-meta"><span class="tiny-dot" style="background:${person(event.agent).color}"></span>${escape(event.agent)}<span> TICK ${escape(event.tick || '—')}</span></span><span class="event-excerpt" style="display:block">${escape(short(event.resolution.replace(/^Event Resolution:\s*\[event\]\s*/,'') || event.action, 180))}</span></span><span class="event-arrow">↗</span></button>`).join('');
   const active = $('.event-row.active');
-  if (active) active.scrollIntoView({block:'nearest', behavior:'instant'});
+  if (active) {
+    // Follow the current action inside the list without scrolling the page.
+    const list = $('#eventList');
+    const bounds = list.getBoundingClientRect();
+    const row = active.getBoundingClientRect();
+    if (row.top < bounds.top) list.scrollTop -= bounds.top - row.top;
+    else if (row.bottom > bounds.bottom) list.scrollTop += row.bottom - bounds.bottom;
+  }
 }
 
 function rawDetails(data, label = 'Recorded prompt & output') {
@@ -114,7 +123,7 @@ function renderInspector() {
     return;
   }
   const earlier = event.id !== state.index ? ' · LATEST EARLIER RECORD' : '';
-  let content = `<div class="event-tag"><span>EVENT ${String(event.id + 1).padStart(2,'0')} / TICK ${event.tick || '—'}</span><span>${earlier ? 'EARLIER RECORD' : 'RECORDED OUTPUT'}</span></div><div class="stage-nav" aria-label="Decision stage">${Object.keys(icons).map(stage => `<button data-stage="${stage}" class="${state.stage === stage ? 'active' : ''}" aria-pressed="${state.stage === stage}"><span>${icons[stage]}</span>${stage[0].toUpperCase()+stage.slice(1)}</button>`).join('')}</div>`;
+  let content = `<div class="event-tag"><span>EVENT ${String(event.id + 1).padStart(2,'0')} / TICK ${event.tick || '—'}</span><span>${earlier ? 'EARLIER RECORD' : 'RECORDED OUTPUT'}</span></div><p class="soft-note" style="margin:0 0 12px">Action context: ${escape(event.clock || 'Time not recorded')}. The map shows the saved tick snapshot separately.</p><div class="stage-nav" aria-label="Decision stage">${Object.keys(icons).map(stage => `<button data-stage="${stage}" class="${state.stage === stage ? 'active' : ''}" aria-pressed="${state.stage === stage}"><span>${icons[stage]}</span>${stage[0].toUpperCase()+stage.slice(1)}</button>`).join('')}</div>`;
   if (state.stage === 'think') {
     content += '<p class="section-kicker">THE ESA DECISION PIPELINE</p><h3>What’s on their mind?</h3><p class="soft-note" style="margin:0 0 16px">Recorded component outputs. Expand a card to read the full text and its saved transcript.</p>';
     content += event.thoughts.map((thought,index) => `<details class="thought-item" ${index === 0 || thought.id === 'EmotionalExperience' ? 'open' : ''}><summary><span class="thought-number">${String(index+1).padStart(2,'0')}</span>${escape(thought.label)}${thought.cached ? '<span class="cache-tag">CACHED</span>' : ''}</summary><div class="thought-text"><p class="body-copy">${escape(thought.text || 'No text recorded.')}</p>${rawDetails(thought.record)}</div></details>`).join('');
@@ -124,7 +133,7 @@ function renderInspector() {
   } else if (state.stage === 'act') {
     content += `<p class="section-kicker">THE AGENT’S PROPOSAL</p><h3>From thought to action.</h3><p class="body-copy">${escape(event.action || 'No action was recorded.')}</p><p class="soft-note">A proposed action is not yet a confirmed world outcome.</p>`;
   } else {
-    content += `<p class="section-kicker">THE GAME MASTER’S RESPONSE</p><h3>What actually happened?</h3><p class="body-copy">${escape(event.resolution || 'No resolution was recorded.')}</p><div class="profile-section" style="margin-top:22px"><h4>RECORDED GM LOCATION CONTEXT</h4>${Object.entries(event.context_locations).map(([name,loc])=>`<div class="state-row"><span>${escape(name)}</span><span>${escape(pretty(loc))}</span></div>`).join('')}</div>${rawDetails(event.gm_record, 'Full recorded Game Master context')}<p class="soft-note">This location context was captured for resolution. Use “Tick snapshot” on the map to inspect the separate tick-level location record.</p>`;
+    content += `<p class="section-kicker">THE GAME MASTER’S RESPONSE</p><h3>How was it resolved?</h3><p class="body-copy">${escape(event.resolution || 'No resolution was recorded.')}</p><div class="profile-section" style="margin-top:22px"><h4>RECORDED GM LOCATION CONTEXT</h4>${Object.entries(event.context_locations).map(([name,loc])=>`<div class="state-row"><span>${escape(name)}</span><span>${escape(pretty(loc))}</span></div>`).join('')}</div>${rawDetails(event.gm_record, 'Full recorded Game Master context')}<p class="soft-note">This is the recorded narrative and resolution context, which may contain older positions. The map uses only the separate saved location-history snapshot for this tick.</p>`;
   }
   $('#inspectorContent').innerHTML = content;
 }
@@ -245,16 +254,14 @@ function renderMap() {
   $('#routeLayer').innerHTML=routes;
   $('#unmappedNotice').textContent=unmapped?`${unmapped} resident location${unmapped>1?'s':''} not recorded in this view`:'';
   $$('[data-label="place"]').forEach(label=>label.style.display=state.labels?'':'none');
-  $('#contextButton').classList.toggle('active',state.source==='context');
-  $('#snapshotButton').classList.toggle('active',state.source==='snapshot');
-  $('#mapCaption').textContent=state.source==='context'?'Recorded GM context · before resolution':'Recorded tick snapshot · not exact movement timing';
+  $('#mapCaption').textContent=Object.keys(locations).length ? `Tick ${current().tick || '—'} · recorded location snapshot` : 'No location snapshot recorded for this tick';
   $('#locationStatus').textContent=`${state.run.agents.length-unmapped} / ${state.run.agents.length} LOCATED`;
 }
 
 function render() {
   if(!state.run)return;
   const event=current();
-  $('#worldTime').textContent=event.clock || 'Simulation time not recorded';
+  $('#worldTime').textContent=`Tick ${event.tick || '—'} · saved positions`;
   $('#tickLabel').textContent=`TICK ${event.tick || '—'} / ${state.run.state.ticks ?? state.run.clocks.length}`;
   $('#eventPosition').textContent=`EVENT ${state.index+1} OF ${state.run.events.length}`;
   $('#eventSlider').value=state.index;
@@ -294,8 +301,6 @@ $('#playButton').addEventListener('click',play);
 $('#speedSelect').addEventListener('change',()=>{if(state.timer){stop();play();}});
 $('#eventSlider').addEventListener('input',event=>{stop();setIndex(event.target.value);});
 $('#eventFilter').addEventListener('change',event=>{state.filter=event.target.value;renderEvents();});
-$('#contextButton').addEventListener('click',()=>{state.source='context';renderMap();renderResidents();});
-$('#snapshotButton').addEventListener('click',()=>{state.source='snapshot';renderMap();renderResidents();});
 $('#labelsButton').addEventListener('click',()=>{state.labels=!state.labels;$('#labelsButton').setAttribute('aria-pressed',state.labels);renderMap();});
 document.addEventListener('click',event=>{
   const agent=event.target.closest('[data-agent]');
