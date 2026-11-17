@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Island Observatory · Concordia</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Island Observatory home"><span class="brand-mark">◈</span><span>ISLAND<span class="brand-sub">OBSERVATORY</span></span></a>
+    <nav aria-label="Main navigation"><span class="nav-active">World replay</span><button id="aboutButton" class="text-button">About this replay <span>↗</span></button></nav>
+    <div class="run-picker"><span class="status-dot"></span><label for="runSelect">SAVED RUN</label><select id="runSelect" aria-label="Choose a saved run"><option>Loading runs…</option></select><button id="refreshButton" class="icon-button" aria-label="Refresh saved runs" title="Refresh saved runs">↻</button></div>
+  </header>
+  <main>
+    <section class="page-heading"><div><p class="eyebrow">CONCORDIA / FIELD NOTES</p><h1>A window into their world.</h1><p>Follow the residents. Read their decisions. See what happened next.</p></div><div class="run-stats" id="runStats"></div></section>
+    <div id="notice" class="notice" role="status" hidden></div>
+    <div class="workspace" id="workspace" hidden>
+      <aside class="residents panel">
+        <div class="panel-heading"><h2>Residents <span id="agentCount" class="count">0</span></h2><span class="small-label">CLICK TO FOLLOW</span></div>
+        <div id="residentList" class="resident-list"></div>
+        <div class="resident-footer"><span class="mini-icon">⌁</span><p>Every little decision<br>leaves a trace.</p><div class="footer-line"></div><p class="fine">A replay of recorded events.<br>No new model calls.</p></div>
+      </aside>
+      <section class="world-column">
+        <div class="world panel">
+          <div class="world-heading"><div><p class="eyebrow" id="worldEyebrow">A SMALL SOCIETY, IN MOTION</p><h2 id="worldTitle">Brecksville, Ohio</h2><div class="world-sub"><span class="sun">☀</span><span id="worldTime"></span></div></div><span class="replay-badge"><i></i> REPLAY</span></div>
+          <div class="map-controls"><div class="segmented" aria-label="Map state source"><button id="contextButton" class="active" title="The locations recorded in this event's Game Master context">GM context</button><button id="snapshotButton" title="The recorded location snapshot for the selected tick">Tick snapshot</button></div><button id="labelsButton" class="map-label-button" aria-pressed="true">Aa <span>Labels</span></button></div>
+          <div class="map-container" id="mapContainer"><svg id="worldMap" viewBox="0 0 1000 650" role="img" aria-label="Illustrated world map with resident locations"></svg><div class="map-corner"><span class="compass">N<br>↑</span><span>ILLUSTRATIVE MAP</span></div><div id="mapCaption" class="map-caption"></div></div>
+          <div class="world-footer"><span><i class="legend-resident"></i> Resident</span><span><i class="legend-location"></i> Place</span><span id="locationStatus" class="location-status"></span></div>
+        </div>
+        <div class="playback panel">
+          <div class="playback-top"><div class="transport"><button id="previousButton" class="icon-button" aria-label="Previous event">⏮</button><button id="playButton" class="play-button" aria-label="Play replay">▶</button><button id="nextButton" class="icon-button" aria-label="Next event">⏭</button><select id="speedSelect" aria-label="Playback speed"><option value="6000">0.5×</option><option value="3000" selected>1×</option><option value="1500">2×</option></select></div><div class="playback-position"><strong id="tickLabel"></strong><span id="eventPosition"></span></div></div>
+          <label class="sr-only" for="eventSlider">Recorded event</label><input id="eventSlider" type="range" min="0" max="0" value="0">
+          <div class="timeline-labels"><span>START</span><span id="sequenceNote">RECORDED SEQUENCE · NOT WALL-CLOCK TIMING</span><span>END</span></div>
+        </div>
+        <div class="event-panel panel"><div class="panel-heading"><h2>The story so far</h2><select id="eventFilter" aria-label="Filter events by resident"><option value="">All residents</option></select></div><div id="eventList" class="event-list"></div></div>
+      </section>
+      <aside class="inspector panel">
+        <div class="inspector-top"><p class="eyebrow">INSIDE THE SIMULATION</p><div id="selectedResident" class="selected-resident"></div><div class="inspector-tabs" role="tablist"><button data-tab="mind" class="active" role="tab" aria-selected="true">Mind & action</button><button data-tab="profile" role="tab" aria-selected="false">Persona</button><button data-tab="memories" role="tab" aria-selected="false">Memories</button></div></div>
+        <div id="inspectorContent" class="inspector-content"></div>
+      </aside>
+    </div>
+    <footer class="page-footer"><span>BUILT ON CONCORDIA <span class="footer-diamond">◈</span></span><span>Small worlds. Human questions.</span><span>← → step through events · Space to play</span></footer>
+  </main>
+  <dialog id="aboutDialog"><button id="closeAbout" class="dialog-close icon-button" aria-label="Close explanation">×</button><p class="eyebrow">READING THE REPLAY</p><h2>A record, brought to life.</h2><p>This local viewer reads your saved Concordia Island output. It does not run a simulation or make model calls.</p><ul><li><strong>Mind & action</strong> shows the component text, prompt transcripts, action, and Game Master resolution saved in the log. It does not expose hidden model reasoning.</li><li><strong>GM context</strong> shows the locations recorded for the selected resolution. <strong>Tick snapshot</strong> shows the separate location-history record.</li><li>Transitions between locations are illustrative. The run does not record exact walking paths.</li><li>Async events appear in saved log order. This is not a reconstruction of exact concurrent execution timing. Displayed ticks are grouped from the recorded simulation-clock labels.</li><li>Memories show the final saved memory bank. Persona data is matched by resident name from local generated populations, when available.</li></ul><button id="gotItButton" class="primary-button">Back to the world →</button></dialog>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
