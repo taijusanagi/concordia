@@ -43,11 +43,12 @@ python -m examples.concordia_island.run \
 - ESA stands for Enacted Self Agent. It is an agent design that uses observations, personality, memories, and emotions to choose actions.
 - During each tick, agents think about what to do and propose actions, which the Game Master resolves to update the world state. In async mode, agents run concurrently, and an agent may observe another agent's already-resolved action within the same tick. This depends on timing and what information the agent receives. Island advances the clock once all agents have completed the tick's required activity.
 
-## Things I Can Do
+## Things I Can Do Next
 
 - [x] Track LLM calls and estimate token usage with the existing profiler.
 - [x] Create visualizations of the simulation.
 - Test all the examples and study their implementation patterns.
+  -> Select the most relevant ones.
 
 ## Visualizations
 
@@ -60,3 +61,8 @@ python -m examples.concordia_island.run \
 - I found a way to count LLM calls and estimate token usage with the existing profiler. These estimates are not the actual token counts reported by Codex.
 - World state can be represented by narrative memories or structured component state. Prefabs assemble the components that manage it.
 - Defining the entities and deciding how to represent and manage world state will be key first steps in our project.
+
+## Things I Can Do Next
+
+- [ ] Try saving and resuming simulations with checkpoints.
+- [ ] Explore practical implementation examples relevant to my project.
