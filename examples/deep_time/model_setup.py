@@ -44,9 +44,16 @@ import numpy as np
 
 # What a million tokens cost, by mode: a conservative upper bound for the
 # Together models.
-USD_PER_MILLION_TOKENS = {'mock': 0.0, 'together': 1.0, 'ollama': 0.0}
+# Codex uses subscription allowance rather than a separate API charge.
+USD_PER_MILLION_TOKENS = {
+    'mock': 0.0,
+    'together': 1.0,
+    'ollama': 0.0,
+    'openai_codex': 0.0,
+}
 DEFAULT_FAST_MODEL = 'deepseek-ai/DeepSeek-V4.1-Flash'
 DEFAULT_SLOW_MODEL = 'openai/gpt-oss-120b'
+CODEX_DEFAULT_MODEL = 'gpt-6-luna'
 # Local models (the Ollama app on this machine): small for acts, larger for
 # slow minds.
 OLLAMA_FAST_MODEL = 'llama3.2:3b'
@@ -154,7 +161,8 @@ def make_models(
   """Builds the models for a run.
 
   Args:
-    mode: 'mock' (deterministic, offline), 'together' or 'ollama'.
+    mode: 'mock' (deterministic, offline), 'together', 'ollama' or
+      'openai_codex' (the existing Codex subscription login).
     fast_model: Model for per-tick acts.
     slow_model: Model for background deliberation.
     max_calls: Call cap per model (the budget governor).
@@ -162,8 +170,8 @@ def make_models(
       `mock_language_model.VARIANTS`).
 
   Returns:
-    The models. A live mode without credentials falls back to the mock and
-    says so in `label`, so provider trouble never stops a run.
+    The models. Together without credentials and unreachable Ollama fall back
+    to mock and say so in `label`. Codex errors propagate without a fallback.
   """
   profiler = profiler_lib.ProfilerContext()
   profiler.enable()
@@ -210,6 +218,20 @@ def make_models(
     )
     slow = language_models.language_model_setup(
         api_type='ollama', model_name=slow_model
+    )
+  elif mode == 'openai_codex':
+    if fast_model == DEFAULT_FAST_MODEL:
+      fast_model = CODEX_DEFAULT_MODEL
+    if slow_model == DEFAULT_SLOW_MODEL:
+      slow_model = CODEX_DEFAULT_MODEL
+    language_models = importlib.import_module(
+        'concordia.contrib.language_models'
+    )
+    fast = language_models.language_model_setup(
+        api_type='openai_codex', model_name=fast_model
+    )
+    slow = language_models.language_model_setup(
+        api_type='openai_codex', model_name=slow_model
     )
   else:
     raise ValueError(f'Unknown model mode {mode!r}')

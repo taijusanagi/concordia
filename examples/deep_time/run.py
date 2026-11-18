@@ -23,6 +23,11 @@ Live on Together AI (key from TOGETHER_API_KEY or TOGETHER_AI_API_KEY):
   python -m examples.deep_time.run --scenario=daisyworld --mode=together \
       --ticks=10 --max_calls=100
 
+Live through the existing Codex subscription login:
+
+  python -m examples.deep_time.run --scenario=great_acceleration \
+      --mode=openai_codex --ticks=2 --out_dir=./local_runs/deep_time
+
 The run folder holds `report.html` (charts, cognition meters, chronicle,
 briefings, events, topics), `summary.json`, `timeseries.csv`, `topics.mmd`
 (the publisher -> topic -> subscriber graph), Concordia's `log.html` and,
@@ -58,7 +63,10 @@ def define_flags() -> None:
       'scenario', 'daisyworld', sorted(scenarios.SCENARIOS), 'Scenario to run.'
   )
   flags.DEFINE_enum(
-      'mode', 'mock', ['mock', 'together', 'ollama'], 'Language model mode.'
+      'mode',
+      'mock',
+      ['mock', 'together', 'ollama', 'openai_codex'],
+      'Language model mode.',
   )
   flags.DEFINE_integer(
       'ticks', None, 'Maximum ticks (defaults to the scenario length).'

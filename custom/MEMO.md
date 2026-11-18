@@ -64,10 +64,10 @@ python -m examples.concordia_island.run \
 
 ## Things I Can Do Next
 
-- [ ] Explore practical implementation examples relevant to my project.
+- [x] Explore practical implementation examples relevant to my project.
 - [ ] Try saving and resuming simulations with checkpoints.
 
-## Test Recourse Dilemma
+## Test Resourse Dilemma
 
 - This example seems closely related to the business scenario in my project.
 - The example already provides HTML logs, so I can use them without building an additional visualization for now.
@@ -86,3 +86,16 @@ python -m examples.concordia_island.run \
 ## Test Marketplace
 
 - This seems like a useful example for the business scenario in my project.
+
+## Test Deep Time
+
+```
+python -m examples.deep_time.run \
+  --scenario=great_acceleration \
+  --mode=openai_codex \
+  --ticks=40 \
+  --out_dir=./local_runs/deep_time/great_acceleration
+```
+
+- It seems that this is causing climate change over time, and I can then observe its effects.
+- It seems that I can combine the marketplace and DeepTime implementations to explore how they interact with each other.

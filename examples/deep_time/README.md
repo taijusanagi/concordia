@@ -22,6 +22,21 @@ python -m examples.deep_time.run --scenario=daisyworld --mode=together \
     --ticks=10 --max_calls=50
 ```
 
+Live through your existing Codex subscription login (`codex login`):
+
+```bash
+python -m examples.deep_time.run --scenario=great_acceleration \
+    --mode=openai_codex --ticks=2 \
+    --out_dir=./local_runs/deep_time/great_acceleration
+```
+
+Codex mode defaults both regular actions and background reasoning to
+`gpt-6-luna`. Set `--fast_model` and `--slow_model` to override those names.
+It reuses the `openai_codex` provider without an API key and does not fall back
+to mock on authentication errors. Calls consume Codex subscription allowance;
+the zero API-cost estimate does not mean zero usage. Two ticks are a short
+smoke test, not a complete scenario.
+
 Each run writes a folder (`--out_dir`, default `/tmp/deep_time_runs/...`):
 
 | File             | Contents                                                |
@@ -172,8 +187,7 @@ internet.
 | Flag             | Default                           | Meaning               |
 | ---------------- | --------------------------------- | --------------------- |
 | `--scenario`     | `daisyworld`                      | scenario to run       |
-| `--mode`         | `mock`                            | `mock`, `together` or |
-:                  :                                   : `ollama`              :
+| `--mode`         | `mock`                            | `mock`, `together`, `ollama` or `openai_codex` |
 | `--ticks`        | scenario length                   | maximum ticks         |
 | `--out_dir`      | timestamped temp folder           | run folder            |
 | `--fast_model`   | `deepseek-ai/DeepSeek-V4.1-Flash` | per-tick acts         |
