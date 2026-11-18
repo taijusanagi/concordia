@@ -64,5 +64,25 @@ python -m examples.concordia_island.run \
 
 ## Things I Can Do Next
 
-- [ ] Try saving and resuming simulations with checkpoints.
 - [ ] Explore practical implementation examples relevant to my project.
+- [ ] Try saving and resuming simulations with checkpoints.
+
+## Test Recourse Dilemma
+
+- This example seems closely related to the business scenario in my project.
+- The example already provides HTML logs, so I can use them without building an additional visualization for now.
+- This irrigation senario is how farmars interect with each other to manage shared resource
+
+```
+.venv/bin/python -m examples.resource_dilemma.run \
+  --scenario=irrigation \
+  --mode=standard \
+  --num_cycles=2 \
+  --api_type=openai_codex \
+  --model_name=gpt-6-luna \
+  --output_dir=./local_runs/resource_dilemma
+```
+
+## Test Marketplace
+
+- This seems like a useful example for the business scenario in my project.
