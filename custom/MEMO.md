@@ -34,7 +34,7 @@ python -m examples.concordia_island.run \
   --personas_dir=./.tmp --personas_date=my_brecksville \
   --agents=4 --ticks=2 --agent_prefab=esa --engine_type=async \
   --api_type=openai_codex --model_name=gpt-6.1-sol \
-  --poll=False --output_dir=./local_runs/codex_test
+  --poll=False --output_dir=./local_runs/concordia_island
 ```
 
 ## Understanding After the First Example
@@ -45,6 +45,18 @@ python -m examples.concordia_island.run \
 
 ## Things I Can Do
 
-- Add a tracker for LLM calls and token usage.
-- Create visualizations of the simulation.
+- [x] Track LLM calls and estimate token usage with the existing profiler.
+- [x] Create visualizations of the simulation.
 - Test all the examples and study their implementation patterns.
+
+## Visualizations
+
+- I added a visualization for the Island example. It is useful, but I should not spend too much time on it because it is optional.
+- Island initializes the world state, but its default output does not save a dedicated initial-state snapshot or a complete, ordered history of state changes. This makes exact replay difficult. When exploring the next example, I will consider how to capture the initial state and subsequent changes.
+
+## Testing the Tutorial Code
+
+- I updated the tutorial code to use Codex authentication and selected a lower-cost model.
+- I found a way to count LLM calls and estimate token usage with the existing profiler. These estimates are not the actual token counts reported by Codex.
+- World state can be represented by narrative memories or structured component state. Prefabs assemble the components that manage it.
+- Defining the entities and deciding how to represent and manage world state will be key first steps in our project.
